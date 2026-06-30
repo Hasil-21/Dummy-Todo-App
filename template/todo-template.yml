@@ -65,8 +65,6 @@ Resources:
                   - cloudformation:*
                   - sns:*
                   - ssm:*
-                  - sts:*
-                  - ecr-public:*
                 Resource: '*'
 
   CodePipleineRole:
