@@ -4,6 +4,10 @@ env:
   variables:
     ANDROID_SDK_ROOT: /usr/local/android-sdk
     ANDROID_HOME: /usr/local/android-sdk
+    KEYSTORE_PATH: /tmp/todo-release-key.keystore
+  parameter-store:
+    KEYSTORE_PASSWORD: /todo-app/dev/keystore-password
+
 
 phases:
   install:
@@ -28,11 +32,34 @@ phases:
       - npm install -g serverless@3.38.0
       - npm install
 
+  prebuild:
+    commands:
+      - |
+        echo "=== Checking if keystore exists in S3 ==="
+        if aws s3 ls s3://todo-keystore-bucket/todo-release-key.keystore --region ap-south-1 2>/dev/null; then
+          echo "✅ Keystore already exists, downloading..."
+          aws s3 cp s3://todo-keystore-bucket/todo-release-key.keystore /tmp/todo-release-key.keystore --region ap-south-1
+        else
+          echo "❌ Keystore not found, generating new one..."
+          keytool -genkeypair -v -storetype PKCS12 \
+            -keystore /tmp/todo-release-key.keystore \
+            -alias todo-key-alias \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass ${KEYSTORE_PASSWORD} \
+            -keypass ${KEYSTORE_PASSWORD} \
+            -dname "CN=Hasil, OU=Dev, O=TodoApp, L=City, ST=State, C=IN"
+          
+          echo "Uploading new keystore to S3..."
+          aws s3 cp /tmp/todo-release-key.keystore s3://todo-keystore-bucket/todo-release-key.keystore --region ap-south-1
+        fi
+
   build:
     commands:
       - export ANDROID_HOME=/usr/local/android-sdk
       - export ANDROID_SDK_ROOT=/usr/local/android-sdk
       - export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+      - export KEY_ALIAS=todo-key-alias
+      - export KEY_PASSWORD=${KEYSTORE_PASSWORD}
 
       - echo "Building APK..."
       - cd android
