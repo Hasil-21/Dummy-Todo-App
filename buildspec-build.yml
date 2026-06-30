@@ -40,6 +40,7 @@ phases:
       - ./gradlew assembleDebug --no-daemon --info 2>&1 | head 
       - cd ..
 
+      - echo "File Name"
       - find . -name "*.apk" -type f
 
       - echo "Deploying Lambda..."
