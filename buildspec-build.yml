@@ -67,7 +67,7 @@ phases:
       - ./gradlew assembleRelease --no-daemon 
       - cd ..
 
-      - echo "FIle Name"
+      - echo "File Name"
       - find . -name "*.apk" -type f
 
       - echo "Deploying Lambda..."
