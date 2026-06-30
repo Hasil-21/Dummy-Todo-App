@@ -146,7 +146,7 @@ Resources:
             Push:
               - Branches:
                   Includes:
-                    - main1
+                    - main
         
       Stages:
         - Name: Source
