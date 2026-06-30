@@ -1,0 +1,64 @@
+version: 0.2
+
+env:
+  variables:
+    ANDROID_SDK_ROOT: /usr/local/android-sdk
+    ANDROID_HOME: /usr/local/android-sd
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+      java: corretto17
+    commands:
+      - |
+        if [ ! -d "$ANDROID_SDK_ROOT/cmdline-tools/latest" ]; then
+          echo "Installing Android SDK..."
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdline-tools.zip
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          unzip -q /tmp/cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+          mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin
+          yes | sdkmanager --licenses > /dev/null
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "cmake;3.22.1" "ndk;26.1.10909125"
+        else
+          echo "✅ Android SDK restored from cache"
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin
+        fi
+      - npm install -g serverless@3.38.0
+      - npm install
+
+  build:
+    commands:
+      - export ANDROID_HOME=/usr/local/android-sdk
+      - export ANDROID_SDK_ROOT=/usr/local/android-sdk
+      - export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+      - export GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2g -Dkotlin.daemon.enabled=false"
+
+      - echo "Building APK..."
+      - cd android
+      - chmod +x ./gradlew
+      - export GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2g -Dkotlin.daemon.enabled=false"
+      - ./gradlew assembleRelease --no-daemon --info 2>&1 | head -100
+      - cd ..
+
+      - find . -name "*.apk" -type f
+
+      - echo "Installing esbuild"
+      - npm install -g serverless-esbuild
+
+      - echo "Deploying Lambda..."
+      - serverless deploy --stage dev --verbose
+
+artifacts:
+  files:
+    - android/app/build/outputs/apk/release/app-release.apk
+  discard-paths: yes
+
+cache:
+  paths:
+    - node_modules/**/*       
+    - /root/.gradle/**/*        
+    - /root/.npm/**/* 
+    - /usr/local/android-sdk/system-images/**/*
+    - android/**/*

@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This is a shared infra file for Dummy APK.
+
+Resources:
+
+  #VPC
+  TodoVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+  
+  #Subnet
+  PublicTodoSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TodoVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: ap-south-1a
+
+  PublicTodoSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TodoVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: ap-south-1b
+
+  #IGW
+  TodoIGW:
+    Type: AWS::EC2::InternetGateway
+
+  TodoVPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref TodoVPC
+      InternetGatewayId: !Ref TodoIGW
+
+  #Routing
+  PublicRoutingTable:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      VpcId: !Ref TodoVPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: TodoVPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRoutingTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref TodoIGW
+
+  PublicSubnet1RouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicTodoSubnet1
+      RouteTableId: !Ref PublicRoutingTable
+
+  PublicSubnet2RouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicTodoSubnet2
+      RouteTableId: !Ref PublicRoutingTable
+
+  #SNS 
+
+  TodoSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: todo-sns-topic
+      DisplayName: Todo App SNS Topic
+
+  TodoSNSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref TodoSNSTopic
+      Protocol: Email
+      Endpoint: hasiltr@gmail.com
+
+  #SSM
+
+  TodoSNSTopicSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /todo-app/dev/sns-topic-name
+      Type: String
+      Value: !Ref TodoSNSTopic
