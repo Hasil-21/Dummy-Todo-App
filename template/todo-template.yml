@@ -191,7 +191,7 @@ Resources:
               Configuration:
                 BucketName: !Ref TodoAPKBucket
                 Extract: false
-                ObjectKey: builds/app-debug.apk
+                ObjectKey: builds/app-release.apk
               InputArtifacts:
                 - Name: BuildOutput
 

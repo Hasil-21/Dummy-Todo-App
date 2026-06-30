@@ -37,10 +37,10 @@ phases:
       - echo "Building APK..."
       - cd android
       - chmod +x ./gradlew
-      - ./gradlew assembleDebug --no-daemon
+      - ./gradlew assembleRelease --no-daemon 
       - cd ..
 
-      - echo "File Name"
+      - echo "FIle Name"
       - find . -name "*.apk" -type f
 
       - echo "Deploying Lambda..."
@@ -48,7 +48,7 @@ phases:
 
 artifacts:
   files:
-    - android/app/build/outputs/apk/**/*.apk
+    - android/app/build/outputs/apk/release/app-release.apk
   discard-paths: yes
 
 cache:
