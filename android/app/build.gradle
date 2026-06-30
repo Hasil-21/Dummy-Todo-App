@@ -93,7 +93,7 @@ android {
             keyPassword 'android'
         },
         release{
-            if(System.getevn("KEYSTORE_PATH")){
+            if(System.getenv("KEYSTORE_PATH")){
                 storeFile file(System.getenv("KEYSTORE_PATH"))
                 storePassword System.getenv("KEYSTORE_PASSWORD")
                 keyAlias System.getenv("KEY_ALIAS")
