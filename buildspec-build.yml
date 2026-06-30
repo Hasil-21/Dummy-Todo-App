@@ -37,7 +37,7 @@ phases:
       - echo "Building APK..."
       - cd android
       - chmod +x ./gradlew
-      - ./gradlew assembleDebug --no-daemon --info 2>&1 | head 
+      - ./gradlew assembleDebug --no-daemon
       - cd ..
 
       - echo "File Name"
@@ -48,7 +48,7 @@ phases:
 
 artifacts:
   files:
-    - android/app/build/outputs/apk/debug/app-debug.apk
+    - android/app/build/outputs/apk/**/*.apk
   discard-paths: yes
 
 cache:
