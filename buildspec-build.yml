@@ -84,4 +84,5 @@ cache:
     - /root/.gradle/**/*        
     - /root/.npm/**/* 
     - /usr/local/android-sdk/**/* 
-    - android/**/*
+    - android/app/.cxx/**/*    
+    - android/app/build/intermediates/**/* 
