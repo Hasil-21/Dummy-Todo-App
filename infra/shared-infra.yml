@@ -74,6 +74,13 @@ Resources:
       TopicArn: !Ref TodoSNSTopic
       Protocol: Email
       Endpoint: hasiltr@gmail.com
+    
+  TodoSNSSubscription2:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref TodoSNSTopic
+      Protocol: Email
+      Endpoint: falgunitagadkar30@gmail.com
 
   #SSM
 

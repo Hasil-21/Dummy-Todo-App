@@ -15,7 +15,7 @@ module.exports.notify = async (event) => {
         Bucket: bucketName,
         Key: objectKey
     }),
-    { expiresIn: 60 * 60});
+    { expiresIn: 60 * 60 * 24});
 
     await sns.send(new PublishCommand({
         TopicArn: process.env.SNS_TOPIC_ARN,
