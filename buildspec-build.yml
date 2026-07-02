@@ -6,7 +6,7 @@ env:
     ANDROID_HOME: /usr/local/android-sdk
     KEYSTORE_PATH: /tmp/todo-release-key.keystore
   parameter-store:
-    KEYSTORE_PASSWORD: /todo-app/dev/keystore-password
+    KEYSTORE_PASSWORD: /todo-app/dev/keystore-password  
 
 
 phases:

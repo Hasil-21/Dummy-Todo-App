@@ -33,6 +33,12 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldApk
+            Status: Enabled
+            Prefix: builds/
+            ExpirationInDays: 30
 
   TodoKeystoreBucket:
     Type: AWS::S3::Bucket

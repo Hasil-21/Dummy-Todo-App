@@ -3,6 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity,
   FlatList, StyleSheet, SafeAreaView
 } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 
 export default function App() {
   const [todos, setTodos] = useState([]);
@@ -25,6 +26,10 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Todo App</Text>
+
+      <Text style={styles.version}>
+        v{DeviceInfo.getVersion()} (build {DeviceInfo.getBuildNumber()})
+      </Text>
 
       <View style={styles.inputRow}>
         <TextInput
@@ -60,7 +65,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 20 },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 4 },
+  version: { fontSize: 12, color: '#999', marginBottom: 16 },
   inputRow: { flexDirection: 'row', marginBottom: 20 },
   input: { flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10 },
   addBtn: { backgroundColor: '#007AFF', padding: 10, borderRadius: 8, marginLeft: 10, justifyContent: 'center' },
